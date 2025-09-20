@@ -1,166 +1,103 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nama Restoran Anda — Fine Dining, Crafted Taste</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Restoran Anda — Minimal, Premium, Pixel-style</title>
+  <meta name="description" content="Restoran minimalis dengan cita rasa premium. Lihat menu dan reservasi cepat." />
+  <meta name="theme-color" content="#111111" />
 
-  <!-- SEO dasar -->
-  <meta name="description" content="Pengalaman bersantap elegan dengan cita rasa premium. Reservasi meja dan jelajahi menu khas chef kami." />
-  <meta name="theme-color" content="#0E0E0F" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Nama Restoran Anda — Fine Dining, Crafted Taste" />
-  <meta property="og:description" content="Pengalaman bersantap elegan dengan cita rasa premium." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://source.unsplash.com/1600x900/?luxury-restaurant" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Lora:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Font: sans-serif tegas ala Pixel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header -->
-  <header class="site-header" role="banner" aria-label="Navigasi utama">
-    <div class="container nav">
-      <a href="#home" class="brand" aria-label="Beranda Restoran">
-        <span class="brand-mark" aria-hidden="true">◆</span> RESTORAN ANDA
-      </a>
-
-      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="sr-only">Buka menu</span>
-      </button>
-
-      <nav id="primary-nav" class="nav-links" role="navigation">
+  <!-- Header super ringkas -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="#home" aria-label="Beranda">RESTORAN<span>•</span>ANDA</a>
+      <nav class="nav" id="nav">
         <a href="#menu">Menu</a>
-        <a href="#about">Tentang</a>
-        <a href="#lokasi">Lokasi</a>
         <a class="cta" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Reservasi</a>
       </nav>
+      <button class="burger" aria-label="Buka menu" aria-controls="nav" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
   <main id="home">
-    <!-- HERO -->
-    <section class="hero" aria-label="Sambutan">
-      <div class="hero-layer"></div>
-      <div class="container hero-content">
-        <h1>Seni Cita Rasa, Disajikan Sederhana</h1>
-        <p>Fine dining yang hangat, menu pilihan chef, dan pelayanan yang terasa personal. Satu tempat untuk momen berkelas tanpa basa-basi.</p>
-        <div class="hero-actions">
-          <a class="cta" href="#menu">Lihat Menu</a>
-          <a class="link-soft" href="#about">Tentang Kami</a>
+    <!-- HERO: full-bleed, teks minimal -->
+    <section class="hero">
+      <div class="hero__overlay"></div>
+      <div class="container hero__content">
+        <h1>Rasa Jujur.<br/>Desain Bersih.</h1>
+        <div class="hero__actions">
+          <a class="cta cta--primary" href="#menu">Lihat Menu</a>
+          <a class="cta cta--ghost" href="https://wa.me/6281234567890" target="_blank" rel="noopener">Reservasi</a>
         </div>
       </div>
     </section>
 
-    <!-- SIGNATURE / ABOUT -->
-    <section id="about" class="section compact">
-      <div class="container two-col">
-        <div class="stack">
-          <h2 class="section-title">Signature Philosophy</h2>
-          <p>Kami percaya kemewahan tak harus ramai. Bahan terbaik, teknik presisi, plating bersih—cukup itu, sisanya kami biarkan bicara lewat rasa.</p>
-          <ul class="bullets">
-            <li>Bahan musiman dari pemasok terkurasi</li>
-            <li>Teknik modern: slow-cook, confit, jus reduction</li>
-            <li>Menu ringkas yang berganti mengikuti musim</li>
-          </ul>
-          <a class="link-soft" href="#menu">Jelajahi Hidangan</a>
-        </div>
-        <div class="panel photo">
-          <img src="https://source.unsplash.com/900x900/?chef,fine-dining" alt="Chef menyelesaikan plating hidangan signature" loading="lazy" />
-        </div>
-      </div>
-    </section>
-
-    <!-- MENU -->
+    <!-- MENU: grid besar, teks sedikit -->
     <section id="menu" class="section">
       <div class="container">
-        <h2 class="section-title">Menu Khas Chef</h2>
-        <p class="section-sub">Ringkas, fokus, dan berganti mengikuti musim. Pilih kategori untuk menyaring.</p>
-
-        <div class="filters" id="menu-filter-buttons" aria-label="Filter kategori menu"></div>
-
-        <div id="menu-container" class="menu-grid" aria-live="polite">
-          <div class="skeleton-list" id="loading">
-            <!-- skeleton cards (placeholder) -->
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-          </div>
+        <div class="section__head">
+          <h2>Menu</h2>
+          <div class="filters" id="menu-filter-buttons" aria-label="Filter kategori"></div>
         </div>
 
-        <div class="notice" id="menu-notice" hidden></div>
+        <div id="menu-container" class="grid" aria-live="polite">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+
+        <p class="notice" id="menu-notice" hidden></p>
       </div>
     </section>
 
-    <!-- TESTIMONIAL -->
-    <section class="section muted">
-      <div class="container quote">
-        <blockquote>
-          “Suasana tenang, plating bersih, rasa tegas. Tidak banyak bicara, tapi meninggalkan kesan.”
-        </blockquote>
-        <cite>— Pelanggan Setia</cite>
-      </div>
-    </section>
-
-    <!-- RESERVATION STRIP -->
+    <!-- STRIP CTA: sangat singkat -->
     <section class="strip">
-      <div class="container strip-inner">
-        <h3>Siap untuk makan malam yang rapi & berkelas?</h3>
-        <a class="cta cta-strong" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener" aria-label="Reservasi via WhatsApp">Reservasi via WhatsApp</a>
+      <div class="container strip__inner">
+        <h3>Makan malam rapi & berkelas.</h3>
+        <a class="cta cta--primary" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Pesan Meja</a>
       </div>
     </section>
 
-    <!-- LOKASI -->
-    <section id="lokasi" class="section compact">
-      <div class="container two-col">
-        <div class="stack">
-          <h2 class="section-title">Lokasi Kami</h2>
-          <p class="muted-text">Jalan Boulevard Prestise No. 1, Jakarta Pusat</p>
-          <p class="muted-text">Buka: Senin–Minggu, 11.00–22.00 WIB</p>
-          <div class="stack-inline">
-            <a class="link-soft" href="https://maps.google.com/?q=Jalan%20Boulevard%20Prestise%201%2C%20Jakarta" target="_blank" rel="noopener">Lihat di Maps</a>
-            <span class="dot" aria-hidden="true">•</span>
-            <a class="link-soft" href="tel:+6281234567890">Telepon</a>
+    <!-- LOKASI: info singkat saja -->
+    <section class="section section--compact">
+      <div class="container two">
+        <div>
+          <h2>Lokasi</h2>
+          <p class="muted">Jalan Boulevard Prestise No. 1, Jakarta Pusat</p>
+          <p class="muted">Buka: 11.00–22.00 WIB</p>
+          <div class="inline">
+            <a class="link" href="https://maps.google.com/?q=Jalan%20Boulevard%20Prestise%201%2C%20Jakarta" target="_blank" rel="noopener">Maps</a>
+            <span>•</span>
+            <a class="link" href="tel:+6281234567890">Telepon</a>
           </div>
         </div>
-        <div class="panel map">
-          <img src="https://source.unsplash.com/900x900/?restaurant,interior" alt="Interior restoran elegan" loading="lazy" />
+        <div class="frame">
+          <img src="https://source.unsplash.com/1200x800/?restaurant,modern" alt="Interior restoran modern" loading="lazy">
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <p>© 2025 NAMA RESTORAN ANDA. All Rights Reserved.</p>
-      <nav class="footer-links">
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© 2025 Restoran Anda</p>
+      <nav class="footer__nav">
         <a href="#menu">Menu</a>
-        <a href="#about">Tentang</a>
-        <a href="#lokasi">Lokasi</a>
+        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener">Reservasi</a>
       </nav>
     </div>
   </footer>
-
-  <!-- Schema.org -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    "name": "Nama Restoran Anda",
-    "servesCuisine": "Fine Dining",
-    "address": { "@type": "PostalAddress", "addressLocality": "Jakarta", "streetAddress": "Jalan Boulevard Prestise No. 1" },
-    "telephone": "+62 812-3456-7890",
-    "url": "https://example.com"
-  }
-  </script>
 
   <script src="script.js"></script>
 </body>
