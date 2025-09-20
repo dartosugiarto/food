@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
   <title>Sambelix — Minimal, Pedas, Premium</title>
   <meta name="description" content="Sambelix: rasa jujur, desain bersih. Lihat menu dan reservasi cepat." />
   <meta name="theme-color" content="#B22222" />
@@ -13,10 +13,10 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://source.unsplash.com/1600x900/?restaurant,modern" />
 
-  <!-- Favicon simple (emoji cabai) -->
+  <!-- Favicon (emoji cabai) -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' x='6' font-size='48'%3E%F0%9F%8D%86%3C/text%3E%3C/svg%3E">
 
-  <!-- Font: Inter (Pixel vibe) -->
+  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
   <main id="home">
     <!-- HERO -->
     <section class="hero" aria-label="Sambutan">
-      <div class="hero__overlay"></div>
+      <div class="hero__overlay" aria-hidden="true"></div>
       <div class="container hero__content">
         <h1>Pedas jujur.<br/>Desain bersih.</h1>
         <div class="hero__actions">
@@ -63,7 +63,6 @@
         </div>
 
         <div id="menu-container" class="grid" aria-live="polite">
-          <!-- skeleton placeholders -->
           <div class="skeleton"></div>
           <div class="skeleton"></div>
           <div class="skeleton"></div>
@@ -111,19 +110,6 @@
       </nav>
     </div>
   </footer>
-
-  <!-- Schema.org untuk SEO lokal -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    "name": "Sambelix",
-    "servesCuisine": "Indonesian",
-    "address": { "@type": "PostalAddress", "streetAddress": "Jalan Boulevard Prestise No. 1", "addressLocality": "Jakarta" },
-    "telephone": "+62 812-3456-7890",
-    "url": "https://dartosugiarto.github.io"
-  }
-  </script>
 
   <script src="script.js"></script>
 </body>
