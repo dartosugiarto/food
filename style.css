@@ -128,7 +128,11 @@ img {
 }
 
 .card--sale {
-  flex: 0 0 150px; /* Lebar kartu */
+  /* PERBAIKAN: Lebar dihitung dinamis agar 3 kartu pas di layar */
+  /* (100% lebar - total gap) / 3 kartu */
+  width: calc((100% - 24px) / 3);
+  flex-shrink: 0; /* Mencegah kartu menyusut */
+
   background-color: var(--white);
   border: 1px solid #eee;
   border-radius: var(--radius-md);
