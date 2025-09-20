@@ -1,11 +1,11 @@
-// PIXEL-STYLE minimal menu loader (Google Sheet)
+// PIXEL-STYLE minimal menu loader (Google Sheet) — DISESUAIKAN DENGAN LINK KAMU
 document.addEventListener('DOMContentLoaded', () => {
-  /* === Cara pakai: tempel salah satu link di bawah ===
+  /* === Cara pakai: salah satu link di bawah sudah DIISI ===
      1) PUBLISHED_TSV_URL -> dari "Publikasikan ke web" (output=tsv)
-     2) SHARE_LINK        -> link /d/.../edit#gid=... (akan auto pakai CSV gviz)
+     2) SHARE_LINK        -> link /d/.../edit#gid=... (auto pakai CSV gviz)
   */
-  const PUBLISHED_TSV_URL = ""; // contoh: https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid=0&single=true&output=tsv
-  const SHARE_LINK        = ""; // contoh: https://docs.google.com/spreadsheets/d/ID/edit#gid=123456
+  const PUBLISHED_TSV_URL = ""; 
+  const SHARE_LINK        = "https://docs.google.com/spreadsheets/d/10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE/edit?usp=drivesdk";
 
   const { url: DATA_URL, type: DATA_TYPE } = buildDataURL(PUBLISHED_TSV_URL, SHARE_LINK);
 
@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tsvUrl && /output=tsv/.test(tsvUrl)) return { url: tsvUrl, type: 'tsv' };
     if (shareUrl && /\/spreadsheets\/d\//.test(shareUrl)) {
       const id = (shareUrl.match(/\/d\/([a-zA-Z0-9-_]+)/) || [])[1];
-      const gid = (shareUrl.match(/gid=(\d+)/) || [,'0'])[1];
+      const gid = (shareUrl.match(/gid=(\d+)/) || [,'0'])[1]; // default ke 0 jika tidak ada #gid
       return { url: `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`, type: 'csv' };
     }
-    // fallback (boleh diganti)
+    // fallback (boleh diganti kalau mau)
     const EID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE';
     return { url: `https://docs.google.com/spreadsheets/d/e/${EID}/pub?gid=0&single=true&output=tsv`, type: 'tsv' };
   }
