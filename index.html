@@ -3,11 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Restoran Anda — Minimal, Premium, Pixel-style</title>
-  <meta name="description" content="Restoran minimalis dengan cita rasa premium. Lihat menu dan reservasi cepat." />
-  <meta name="theme-color" content="#111111" />
+  <title>Sambelix — Minimal, Pedas, Premium</title>
+  <meta name="description" content="Sambelix: rasa jujur, desain bersih. Lihat menu dan reservasi cepat." />
+  <meta name="theme-color" content="#B22222" />
 
-  <!-- Font: sans-serif tegas ala Pixel -->
+  <!-- Open Graph -->
+  <meta property="og:title" content="Sambelix — Minimal, Pedas, Premium" />
+  <meta property="og:description" content="Rasa jujur, desain bersih." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://source.unsplash.com/1600x900/?restaurant,modern" />
+
+  <!-- Favicon simple (emoji cabai) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' x='6' font-size='48'%3E%F0%9F%8D%86%3C/text%3E%3C/svg%3E">
+
+  <!-- Font: Inter (Pixel vibe) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
@@ -15,14 +24,16 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header super ringkas -->
-  <header class="header">
+  <!-- Header -->
+  <header class="header" role="banner">
     <div class="container header__inner">
-      <a class="brand" href="#home" aria-label="Beranda">RESTORAN<span>•</span>ANDA</a>
-      <nav class="nav" id="nav">
+      <a class="brand" href="#home" aria-label="Beranda">SAMBELI<span>⨯</span>X</a>
+
+      <nav class="nav" id="nav" role="navigation" aria-label="Navigasi utama">
         <a href="#menu">Menu</a>
-        <a class="cta" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Reservasi</a>
+        <a class="cta cta--primary" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Reservasi</a>
       </nav>
+
       <button class="burger" aria-label="Buka menu" aria-controls="nav" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -30,19 +41,20 @@
   </header>
 
   <main id="home">
-    <!-- HERO: full-bleed, teks minimal -->
-    <section class="hero">
+    <!-- HERO -->
+    <section class="hero" aria-label="Sambutan">
       <div class="hero__overlay"></div>
       <div class="container hero__content">
-        <h1>Rasa Jujur.<br/>Desain Bersih.</h1>
+        <h1>Pedas jujur.<br/>Desain bersih.</h1>
         <div class="hero__actions">
           <a class="cta cta--primary" href="#menu">Lihat Menu</a>
           <a class="cta cta--ghost" href="https://wa.me/6281234567890" target="_blank" rel="noopener">Reservasi</a>
         </div>
       </div>
+      <div class="hero__shade" aria-hidden="true"></div>
     </section>
 
-    <!-- MENU: grid besar, teks sedikit -->
+    <!-- MENU -->
     <section id="menu" class="section">
       <div class="container">
         <div class="section__head">
@@ -51,6 +63,7 @@
         </div>
 
         <div id="menu-container" class="grid" aria-live="polite">
+          <!-- skeleton placeholders -->
           <div class="skeleton"></div>
           <div class="skeleton"></div>
           <div class="skeleton"></div>
@@ -61,18 +74,18 @@
       </div>
     </section>
 
-    <!-- STRIP CTA: sangat singkat -->
-    <section class="strip">
+    <!-- STRIP CTA -->
+    <section class="strip" aria-label="Reservasi cepat">
       <div class="container strip__inner">
         <h3>Makan malam rapi & berkelas.</h3>
-        <a class="cta cta--primary" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Pesan Meja</a>
+        <a class="cta cta--primary cta--lg" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Pesan Meja</a>
       </div>
     </section>
 
-    <!-- LOKASI: info singkat saja -->
-    <section class="section section--compact">
+    <!-- LOKASI -->
+    <section class="section section--compact" id="lokasi">
       <div class="container two">
-        <div>
+        <div class="stack">
           <h2>Lokasi</h2>
           <p class="muted">Jalan Boulevard Prestise No. 1, Jakarta Pusat</p>
           <p class="muted">Buka: 11.00–22.00 WIB</p>
@@ -91,13 +104,26 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <p>© 2025 Restoran Anda</p>
+      <p>© 2025 Sambelix</p>
       <nav class="footer__nav">
         <a href="#menu">Menu</a>
-        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener">Reservasi</a>
+        <a href="#lokasi">Lokasi</a>
       </nav>
     </div>
   </footer>
+
+  <!-- Schema.org untuk SEO lokal -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Sambelix",
+    "servesCuisine": "Indonesian",
+    "address": { "@type": "PostalAddress", "streetAddress": "Jalan Boulevard Prestise No. 1", "addressLocality": "Jakarta" },
+    "telephone": "+62 812-3456-7890",
+    "url": "https://dartosugiarto.github.io"
+  }
+  </script>
 
   <script src="script.js"></script>
 </body>
