@@ -6,17 +6,9 @@
   <title>Sambelix — Minimal, Pedas, Premium</title>
   <meta name="description" content="Sambelix: rasa jujur, desain bersih. Lihat menu dan reservasi cepat." />
   <meta name="theme-color" content="#B22222" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Sambelix — Minimal, Pedas, Premium" />
-  <meta property="og:description" content="Rasa jujur, desain bersih." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://source.unsplash.com/1600x900/?restaurant,modern" />
-
-  <!-- Favicon (emoji cabai) -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' x='6' font-size='48'%3E%F0%9F%8D%86%3C/text%3E%3C/svg%3E">
 
-  <!-- Font -->
+  <!-- Font sans tegas, enak dibaca di HP -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
@@ -30,18 +22,20 @@
       <a class="brand" href="#home" aria-label="Beranda">SAMBELI<span>⨯</span>X</a>
 
       <nav class="nav" id="nav" role="navigation" aria-label="Navigasi utama">
-        <a href="#menu">Menu</a>
-        <a class="cta cta--primary" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Reservasi</a>
+        <a href="#menu" class="nav__link">Menu</a>
+        <a href="#lokasi" class="nav__link">Lokasi</a>
+        <a class="cta cta--primary nav__cta" href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20reservasi" target="_blank" rel="noopener">Reservasi</a>
       </nav>
 
       <button class="burger" aria-label="Buka menu" aria-controls="nav" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
   </header>
 
   <main id="home">
-    <!-- HERO -->
+    <!-- HERO: copy minim, kontras tinggi -->
     <section class="hero" aria-label="Sambutan">
       <div class="hero__overlay" aria-hidden="true"></div>
       <div class="container hero__content">
@@ -51,10 +45,9 @@
           <a class="cta cta--ghost" href="https://wa.me/6281234567890" target="_blank" rel="noopener">Reservasi</a>
         </div>
       </div>
-      <div class="hero__shade" aria-hidden="true"></div>
     </section>
 
-    <!-- MENU -->
+    <!-- MENU: grid ringan, mudah discan -->
     <section id="menu" class="section">
       <div class="container">
         <div class="section__head">
@@ -63,10 +56,8 @@
         </div>
 
         <div id="menu-container" class="grid" aria-live="polite">
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div>
+          <div class="skeleton"></div><div class="skeleton"></div>
         </div>
 
         <p class="notice" id="menu-notice" hidden></p>
@@ -81,7 +72,7 @@
       </div>
     </section>
 
-    <!-- LOKASI -->
+    <!-- LOKASI: singkat & jelas -->
     <section class="section section--compact" id="lokasi">
       <div class="container two">
         <div class="stack">
