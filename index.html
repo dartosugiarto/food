@@ -3,53 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nama Restoran Anda</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Nama Restoran Anda - Cita Rasa Premium</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <nav>
-            <h1>Nama Restoran Anda</h1>
-            <ul>
-                <li><a href="#hero">Beranda</a></li>
-                <li><a href="#menu">Menu</a></li>
-                <li><a href="#kontak">Kontak</a></li>
-            </ul>
+        <nav class="container">
+            <a href="#" class="nav-logo">RESTORAN ANDA</a>
+            <div class="nav-links">
+                <a href="#menu">Menu</a>
+                <a href="#lokasi">Lokasi</a>
+                <a href="https://wa.me/6281234567890" class="cta-button nav-cta">Reservasi</a>
+            </div>
         </nav>
     </header>
 
     <main>
         <section id="hero">
-            <div class="hero-content">
-                <h2>Selamat Datang di Restoran Kami</h2>
-                <p>Menyajikan cita rasa terbaik dari bahan-bahan pilihan.</p>
-                <a href="#menu" class="cta-button">Lihat Menu</a>
+            <div class="hero-overlay"></div>
+            <div class="hero-content container">
+                <h1>Seni Cita Rasa dalam Setiap Hidangan</h1>
+                <p>Pengalaman kuliner tak terlupakan yang diracik dari bahan-bahan terbaik oleh chef profesional kami.</p>
+                <a href="#menu" class="cta-button">Jelajahi Menu</a>
             </div>
         </section>
 
-        <section id="menu">
-            <h2>Menu Andalan Kami</h2>
+        <section id="menu" class="container">
+            <h2>Mahakarya Kuliner Kami</h2>
             <div id="menu-filter-buttons">
                 </div>
             <div id="menu-container" class="menu-grid">
-                <p id="loading-text">Memuat menu, mohon tunggu...</p>
+                <p id="loading-text">Memuat menu premium kami...</p>
             </div>
         </section>
 
-        <section id="kontak">
-            <h2>Hubungi Kami</h2>
-            <p><strong>Alamat:</strong> Jalan Kuliner No. 123, Kota Enak, Indonesia</p>
-            <p><strong>Telepon:</strong> (021) 123-4567</p>
-            <p><strong>Jam Buka:</strong> Setiap Hari, 10:00 - 22:00</p>
+        <section id="testimonials">
+            <div class="container">
+                <h2>Apa Kata Mereka</h2>
+                <div class="testimonial-card">
+                    <blockquote>
+                        "Suasana yang elegan dan makanan yang luar biasa. Setiap hidangan terasa seperti sebuah karya seni. Sangat direkomendasikan!"
+                    </blockquote>
+                    <cite>- Pelanggan Setia</cite>
+                </div>
+            </div>
+        </section>
+
+        <section id="lokasi" class="container">
+            <h2>Kunjungi Kami</h2>
+            <p>Rasakan langsung pengalaman bersantap yang istimewa di lokasi premium kami.</p>
+            <p class="alamat">Jalan Boulevard Prestise No. 1, Jakarta Pusat</p>
+            <a href="https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20melakukan%20reservasi." class="cta-button" target="_blank">Reservasi Meja Anda</a>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 Nama Restoran Anda. Hak Cipta Dilindungi.</p>
+        <div class="container">
+            <p>&copy; 2025 NAMA RESTORAN ANDA. All Rights Reserved.</p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
