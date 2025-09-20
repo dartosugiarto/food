@@ -1,9 +1,18 @@
-// SAMBELIX — Pixel-style data loader (Google Sheet)
+// SAMBELIX — Mobile-first Pixel-style loader (Google Sheet)
 document.addEventListener('DOMContentLoaded', () => {
-  /* === Isi salah satu: ===
+  /* ===== Fix 100vh iOS: set --vh ke tinggi viewport aktual ===== */
+  function setRealVh(){
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  setRealVh();
+  window.addEventListener('resize', setRealVh);
+  window.addEventListener('orientationchange', setRealVh);
+
+  /* === Data Source: isi salah satu ===
      1) PUBLISHED_TSV_URL -> dari "Publikasikan ke web" (output=tsv)
      2) SHARE_LINK        -> link /d/.../edit#gid=... (pakai CSV gviz)
-     Di bawah ini SHARE_LINK sudah diisi link kamu; kalau nanti publish, isi PUBLISHED_TSV_URL.
+     Saat ini SHARE_LINK diisi link kamu; jika publish, isi PUBLISHED_TSV_URL.
   */
   const PUBLISHED_TSV_URL = ""; 
   const SHARE_LINK = "https://docs.google.com/spreadsheets/d/10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE/edit?usp=drivesdk";
@@ -44,11 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tsvUrl && /output=tsv/.test(tsvUrl)) return { url: tsvUrl, type: 'tsv' };
     if (shareUrl && /\/spreadsheets\/d\//.test(shareUrl)) {
       const id = (shareUrl.match(/\/d\/([a-zA-Z0-9-_]+)/) || [])[1];
-      // jika tidak ada #gid, default 0 (sheet pertama)
-      const gid = (shareUrl.match(/gid=(\d+)/) || [,'0'])[1];
+      const gid = (shareUrl.match(/gid=(\d+)/) || [,'0'])[1]; // default 0
       return { url: `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`, type: 'csv' };
     }
-    // fallback (boleh diganti/dihapus)
+    // fallback (boleh diganti)
     const EID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE';
     return { url: `https://docs.google.com/spreadsheets/d/e/${EID}/pub?gid=0&single=true&output=tsv`, type: 'tsv' };
   }
@@ -63,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const o = {}; h.forEach((k,i)=>o[k]=v[i]??''); return o;
     });
   }
-  // CSV parser (cukup untuk output gviz)
   function parseCSV(csv){
     const rows = csv.split('\n').map(r=>r.replace(/\r$/,'')).filter(Boolean);
     if (rows.length < 2) return [];
@@ -110,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!items.length){ showNotice('Menu kosong.'); return; }
     hideNotice();
 
-    // small appear animation via rAF
     items.forEach((it, idx)=>{
       if (!it['Nama Menu'] || !it.Harga) return;
       const media = it.MediaURL || 'https://via.placeholder.com/1200x800.png?text=Menu';
@@ -130,17 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       grid.appendChild(card);
 
-      if (animate){
-        setTimeout(()=>{
-          card.style.transition = 'opacity .28s ease, transform .28s ease';
-          card.style.opacity = 1; card.style.transform = 'none';
-        }, 30 + idx*24); // stagger halus
-      }else{
-        requestAnimationFrame(()=>{
-          card.style.transition = 'opacity .28s ease, transform .28s ease';
-          card.style.opacity = 1; card.style.transform = 'none';
-        });
-      }
+      // Stagger ringan untuk mobile
+      setTimeout(()=>{
+        card.style.transition = 'opacity .28s ease, transform .28s ease';
+        card.style.opacity = 1; card.style.transform = 'none';
+      }, 30 + idx*24);
     });
   }
 
