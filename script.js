@@ -1,16 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
     // --- KONFIGURASI ---
-    // GANTI DENGAN SHEET ID DAN GID ANDA
-    const SHEET_ID = 'YOUR_SHEET_ID';
-    const GID = 'YOUR_GID';
+    // SHEET_ID sudah diisi sesuai link Anda. GID diasumsikan 0 (sheet pertama).
+    const SHEET_ID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE';
+    const GID = '0';
     // -------------------
 
     const menuContainer = document.getElementById('menu-container');
     const loadingText = document.getElementById('loading-text');
     const filterButtonsContainer = document.getElementById('menu-filter-buttons');
     
-    // URL untuk mengambil data sebagai TSV (Tab Separated Values)
-    // TSV lebih ringan dan mudah di-parse daripada JSON dari API v4 untuk kasus ini
     const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID}&single=true&output=tsv`;
     
     let allMenuItems = [];
@@ -18,19 +16,19 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch(url)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Gagal mengambil data. Pastikan sheet sudah di "Publish to web".');
             }
             return response.text();
         })
         .then(data => {
             allMenuItems = parseTSV(data);
             createFilterButtons(allMenuItems);
-            displayMenu(allMenuItems); // Tampilkan semua menu saat pertama kali load
+            displayMenu(allMenuItems); 
         })
         .catch(error => {
-            console.error('Error fetching or parsing data:', error);
+            console.error('Error:', error);
             if (loadingText) {
-                loadingText.textContent = 'Gagal memuat menu. Silakan coba lagi nanti.';
+                loadingText.textContent = 'Gagal memuat menu. Cek konsol untuk detail error.';
             }
         });
 
@@ -42,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
         for (let i = 1; i < rows.length; i++) {
             const values = rows[i].split('\t').map(value => value.trim());
             if (values.length === headers.length) {
-                const entry = {};
+                let entry = {};
                 headers.forEach((header, index) => {
                     entry[header] = values[index];
                 });
@@ -53,27 +51,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     function createFilterButtons(items) {
-        const categories = ['Semua', ...new Set(items.map(item => item.Kategori))];
+        // Mengambil kategori unik dari data, mengabaikan baris yang kategorinya kosong
+        const categories = ['Semua', ...new Set(items.map(item => item.Kategori).filter(Boolean))];
         
         categories.forEach(category => {
             const button = document.createElement('button');
             button.className = 'filter-btn';
             button.textContent = category;
-            if (category === 'Semua') {
-                button.classList.add('active');
-            }
+            if (category === 'Semua') button.classList.add('active');
+            
             button.addEventListener('click', () => {
-                // Hapus kelas active dari semua tombol
                 document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                // Tambahkan kelas active ke tombol yang diklik
                 button.classList.add('active');
-
-                if (category === 'Semua') {
-                    displayMenu(allMenuItems);
-                } else {
-                    const filteredItems = allMenuItems.filter(item => item.Kategori === category);
-                    displayMenu(filteredItems);
-                }
+                const filteredItems = (category === 'Semua') ? allMenuItems : allMenuItems.filter(item => item.Kategori === category);
+                displayMenu(filteredItems);
             });
             filterButtonsContainer.appendChild(button);
         });
@@ -82,30 +73,26 @@ document.addEventListener("DOMContentLoaded", function() {
     function displayMenu(items) {
         if (!menuContainer) return;
         
-        menuContainer.innerHTML = ''; // Kosongkan container
+        menuContainer.innerHTML = ''; 
 
-        if (items.length === 0 && loadingText) {
+        if (items.length === 0) {
             menuContainer.innerHTML = '<p>Menu tidak ditemukan.</p>';
             return;
         }
 
-        if (loadingText) {
-            loadingText.style.display = 'none'; // Sembunyikan pesan loading
-        }
+        if (loadingText) loadingText.style.display = 'none';
 
         items.forEach(item => {
-            // Cek jika data penting ada, jika tidak, lewati item ini
-            if (!item.NamaMenu || !item.Harga) {
-                return;
-            }
+            // Menggunakan nama kolom dari sheet Anda: 'Nama Menu' dan 'MediaURL'
+            if (!item['Nama Menu'] || !item.Harga) return;
 
             const menuItemDiv = document.createElement('div');
             menuItemDiv.className = 'menu-item';
 
             menuItemDiv.innerHTML = `
-                <img src="${item.URLGambar || 'https://via.placeholder.com/400x250.png?text=Gambar+Menu'}" alt="${item.NamaMenu}">
+                <img src="${item.MediaURL || 'https://via.placeholder.com/400x250.png?text=Gambar+Menu'}" alt="${item['Nama Menu']}">
                 <div class="menu-item-content">
-                    <h3>${item.NamaMenu}</h3>
+                    <h3>${item['Nama Menu']}</h3>
                     <p>${item.Deskripsi || ''}</p>
                     <div class="price">Rp ${item.Harga}</div>
                 </div>
