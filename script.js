@@ -1,10 +1,58 @@
+// script.js — versi robust: cukup tempel satu link, sisanya auto
 document.addEventListener('DOMContentLoaded', () => {
-  /* ================== KONFIGURASI GOOGLE SHEET ==================
-     Mengikuti pola publikasi "Publish to the web" dan ambil output TSV
-     (struktur ini mempertahankan pendekatan file sebelumnya). */
-  const SHEET_ID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE'; // ganti bila perlu
-  const GID = '0';
-  const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID}&single=true&output=tsv`;
+  /* ============================================================
+     CARA PAKAI (pilih salah satu yang kamu punya):
+     1) PUBLISHED_TSV_URL  -> tempel link dari "File → Bagikan → Publikasikan ke web"
+        Contoh: https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid=0&single=true&output=tsv
+     2) SHARE_LINK         -> kalau belum publish, tempel link edit/view biasa
+        Contoh: https://docs.google.com/spreadsheets/d/1AbCdEfGh.../edit#gid=123456789
+     3) (OPSIONAL) RAW_ID & GID -> kalau ingin manual
+  ============================================================ */
+
+  // === PASTE DI SINI (salah satu sudah cukup) ===
+  const PUBLISHED_TSV_URL = ""; // << tempel link "Publikasikan ke web" (output=tsv) di sini
+  const SHARE_LINK       = "";  // << atau tempel link /d/…/edit#gid=… (bila belum publish)
+
+  // === Opsi manual (boleh dikosongkan bila pakai 1) atau 2)) ===
+  const RAW_DOC_ID = "";         // mis. 1AbCdEfGhIjKl... (ID setelah /d/)
+  const RAW_GID    = "";         // mis. 0 atau angka lain sesuai sheet
+
+  /* ============================================================
+     KONSTRUKSI URL SUMBER DATA (otomatis pilih yang tersedia)
+  ============================================================ */
+  function buildDataURL() {
+    // 1) Jika ada link publish (TSV), pakai itu.
+    if (PUBLISHED_TSV_URL && /output=tsv/.test(PUBLISHED_TSV_URL)) {
+      return { url: PUBLISHED_TSV_URL, type: 'tsv' };
+    }
+
+    // 2) Jika ada SHARE_LINK (edit/view), turunkan ke gviz CSV
+    if (SHARE_LINK && /\/spreadsheets\/d\//.test(SHARE_LINK)) {
+      const docId = (SHARE_LINK.match(/\/d\/([a-zA-Z0-9-_]+)/) || [])[1];
+      // cari gid=… (kalau tidak ada, default 0)
+      const gidMatch = SHARE_LINK.match(/gid=(\d+)/);
+      const gid = gidMatch ? gidMatch[1] : '0';
+      if (docId) {
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${docId}/gviz/tq?tqx=out:csv&gid=${gid}`;
+        return { url: csvUrl, type: 'csv' };
+      }
+    }
+
+    // 3) Jika RAW_DOC_ID & RAW_GID diisi, pakai gviz CSV
+    if (RAW_DOC_ID) {
+      const gid = RAW_GID || '0';
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${RAW_DOC_ID}/gviz/tq?tqx=out:csv&gid=${gid}`;
+      return { url: csvUrl, type: 'csv' };
+    }
+
+    // 4) Fallback (tetap kompatibel dengan versi lama kamu) — ganti jika perlu
+    const LEGACY_SHEET_E_ID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE'; // ID /d/e/ dari versi sebelumnya
+    const LEGACY_GID = '0';
+    const legacyUrl = `https://docs.google.com/spreadsheets/d/e/${LEGACY_SHEET_E_ID}/pub?gid=${LEGACY_GID}&single=true&output=tsv`;
+    return { url: legacyUrl, type: 'tsv' };
+  }
+
+  const { url: DATA_URL, type: DATA_TYPE } = buildDataURL();
 
   /* ================== ELEMENTS ================== */
   const menuContainer = document.getElementById('menu-container');
@@ -25,20 +73,20 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ================== FETCH & RENDER MENU ================== */
   let allItems = [];
 
-  fetch(SHEET_URL)
+  fetch(DATA_URL)
     .then(r => {
       if (!r.ok) throw new Error('Gagal mengambil data dari Google Sheet.');
       return r.text();
     })
     .then(text => {
-      allItems = parseTSV(text);
+      allItems = (DATA_TYPE === 'tsv') ? parseTSV(text) : parseCSV(text);
       if (!allItems.length) throw new Error('Data menu kosong atau format tidak sesuai.');
       createFilters(allItems);
       renderMenu(allItems);
     })
     .catch(err => {
       console.error(err);
-      showNotice('Gagal memuat menu. Coba bersihkan cache browser dan muat ulang halaman.');
+      showNotice('Gagal memuat menu. Pastikan Sheet dipublikasi / berbagi untuk umum, lalu muat ulang.');
     })
     .finally(() => {
       if (loading) loading.remove();
@@ -48,16 +96,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const rows = tsv.split('\n').map(r => r.trim()).filter(Boolean);
     if (rows.length < 2) return [];
     const headers = rows[0].split('\t').map(h => h.trim());
-    const data = [];
-    for (let i = 1; i < rows.length; i++) {
-      const values = rows[i].split('\t').map(v => v.trim());
-      if (values.length === headers.length) {
-        const obj = {};
-        headers.forEach((h, idx) => obj[h] = values[idx]);
-        data.push(obj);
+    return rows.slice(1).map(line => {
+      const values = line.split('\t').map(v => v.trim());
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = values[i] ?? '');
+      return obj;
+    });
+  }
+
+  function parseCSV(csv) {
+    // parsing CSV sederhana (tanpa tanda kutip kompleks). Untuk kasus umum sheet sudah cukup.
+    const rows = csv.split('\n').map(r => r.replace(/\r$/,'')).filter(Boolean);
+    if (rows.length < 2) return [];
+    const headers = rows[0].split(',').map(h => h.trim());
+    return rows.slice(1).map(line => {
+      const values = splitCSV(line);
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = (values[i] || '').trim());
+      return obj;
+    });
+  }
+
+  function splitCSV(line) {
+    // dukung nilai bertanda kutip dan koma di dalam kutip
+    const out = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; } // escape ""
+        else inQ = !inQ;
+      } else if (c === ',' && !inQ) {
+        out.push(cur); cur = '';
+      } else {
+        cur += c;
       }
     }
-    return data;
+    out.push(cur);
+    return out;
+    // Catatan: cukup untuk output gviz default.
   }
 
   function createFilters(items) {
@@ -86,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     hideNotice();
 
-    // IntersectionObserver untuk lazy-appear
     const io = new IntersectionObserver((entries, obs) => {
       entries.forEach(en => {
         if (en.isIntersecting) {
@@ -98,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     items.forEach(item => {
       if (!item['Nama Menu'] || !item.Harga) return;
+
       const card = document.createElement('article');
       card.className = 'card';
       if (animate) card.style.opacity = 0;
@@ -106,7 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const desc = item.Deskripsi || '';
 
       card.innerHTML = `
-        <img class="card-img" src="${media}" alt="${escapeHtml(item['Nama Menu'])}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x500.png?text=Gambar+Error';" />
+        <img class="card-img" src="${media}" alt="${escapeHtml(item['Nama Menu'])}" loading="lazy"
+             onerror="this.onerror=null;this.src='https://via.placeholder.com/800x500.png?text=Gambar+Error';" />
         <div class="card-body">
           <h3 class="card-title">${escapeHtml(item['Nama Menu'])}</h3>
           <p class="card-desc">${escapeHtml(desc)}</p>
@@ -129,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function formatRupiah(x) {
-    // mendukung "50000" atau "50.000"
     const num = Number(String(x).replace(/[^\d]/g, '')) || 0;
     return num.toLocaleString('id-ID');
   }
@@ -144,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
     notice.hidden = true;
     notice.textContent = '';
   }
-
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
