@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
     // --- KONFIGURASI ---
-    // SHEET_ID sudah diisi sesuai link Anda. GID diasumsikan 0 (sheet pertama).
     const SHEET_ID = '10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE';
     const GID = '0';
     // -------------------
@@ -16,24 +15,33 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch(url)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Gagal mengambil data. Pastikan sheet sudah di "Publish to web".');
+                throw new Error('Gagal mengambil data dari Google Sheet. Periksa kembali pengaturan "Publish to web".');
             }
             return response.text();
         })
         .then(data => {
             allMenuItems = parseTSV(data);
+            if(allMenuItems.length === 0) {
+                 throw new Error('Data menu kosong atau format sheet salah.');
+            }
             createFilterButtons(allMenuItems);
             displayMenu(allMenuItems); 
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Detail Error:', error);
             if (loadingText) {
-                loadingText.textContent = 'Gagal memuat menu. Cek konsol untuk detail error.';
+                // Pesan error yang lebih membantu
+                loadingText.innerHTML = `
+                    <strong>Gagal Memuat Menu.</strong><br>
+                    Penyebab umum: Koneksi internet lambat atau browser menyimpan data lama (cache).<br><br>
+                    Silakan coba <strong>bersihkan cache browser Anda</strong> (lihat instruksi sebelumnya) lalu muat ulang halaman.
+                `;
             }
         });
 
     function parseTSV(tsv) {
         const rows = tsv.split('\n').map(row => row.trim());
+        if (rows.length < 2) return []; // Cek jika sheet kosong
         const headers = rows[0].split('\t').map(header => header.trim());
         const data = [];
 
@@ -51,9 +59,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     function createFilterButtons(items) {
-        // Mengambil kategori unik dari data, mengabaikan baris yang kategorinya kosong
         const categories = ['Semua', ...new Set(items.map(item => item.Kategori).filter(Boolean))];
         
+        filterButtonsContainer.innerHTML = ''; // Kosongkan tombol lama
         categories.forEach(category => {
             const button = document.createElement('button');
             button.className = 'filter-btn';
@@ -76,21 +84,20 @@ document.addEventListener("DOMContentLoaded", function() {
         menuContainer.innerHTML = ''; 
 
         if (items.length === 0) {
-            menuContainer.innerHTML = '<p>Menu tidak ditemukan.</p>';
+            menuContainer.innerHTML = '<p>Menu tidak ditemukan untuk kategori ini.</p>';
             return;
         }
 
         if (loadingText) loadingText.style.display = 'none';
 
         items.forEach(item => {
-            // Menggunakan nama kolom dari sheet Anda: 'Nama Menu' dan 'MediaURL'
             if (!item['Nama Menu'] || !item.Harga) return;
 
             const menuItemDiv = document.createElement('div');
             menuItemDiv.className = 'menu-item';
 
             menuItemDiv.innerHTML = `
-                <img src="${item.MediaURL || 'https://via.placeholder.com/400x250.png?text=Gambar+Menu'}" alt="${item['Nama Menu']}">
+                <img src="${item.MediaURL || 'https://via.placeholder.com/400x250.png?text=Gambar+Menu'}" alt="${item['Nama Menu']}" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x250.png?text=Gambar+Error';">
                 <div class="menu-item-content">
                     <h3>${item['Nama Menu']}</h3>
                     <p>${item.Deskripsi || ''}</p>
