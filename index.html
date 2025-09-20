@@ -1,89 +1,45 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const GOOGLE_SHEET_SHARE_LINK = "https://docs.google.com/spreadsheets/d/10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE/edit?usp=drivesdk";
-
-  const flashSaleSection = document.getElementById('flash-sale-section');
-  const flashSaleContainer = document.getElementById('flash-sale-container');
-  const mainMenuContainer = document.getElementById('main-menu-container');
-
-  const fetchData = async () => {
-    const url = buildProxyUrl(GOOGLE_SHEET_SHARE_LINK);
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Gagal mengambil data dari Google Sheet.');
-      const text = await response.text();
-      const items = parseCSV(text);
-      renderItems(items);
-    } catch (error) {
-      console.error(error);
-      mainMenuContainer.innerHTML = `<p style="text-align: center; color: var(--red);">Gagal memuat menu.</p>`;
-    }
-  };
-
-  const renderItems = (items) => {
-    flashSaleContainer.innerHTML = '';
-    mainMenuContainer.innerHTML = '';
-
-    // PERUBAHAN DI SINI: Batasi lagi menjadi 3 item untuk layout grid
-    const flashSaleItems = items
-      .filter(item => item['Kategori'] === 'Flash Sale' && item['Harga Asli'])
-      .slice(0, 3); // <-- Batasan 3 item diaktifkan kembali
-
-    const mainMenuItems = items.filter(item => item['Kategori'] !== 'Flash Sale');
-    
-    if (flashSaleItems.length > 0) {
-      flashSaleSection.hidden = false;
-      // Beri class berbeda untuk item pertama (besar) dan sisanya (kecil)
-      flashSaleItems.forEach((item, index) => {
-        const cardType = (index === 0) ? 'large' : 'small';
-        const card = createSaleCard(item, cardType);
-        flashSaleContainer.innerHTML += card;
-      });
-    }
-
-    if (mainMenuItems.length > 0) {
-        mainMenuItems.forEach(item => {
-            const card = createMenuCard(item);
-            mainMenuContainer.innerHTML += card;
-        });
-    }
-  };
-
-  const createSaleCard = (item, type) => {
-    const price = parseFloat(item.Harga) || 0;
-    const originalPrice = parseFloat(item['Harga Asli']) || 0;
-    const discount = originalPrice > 0 ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
-
-    // Class dan struktur HTML akan berbeda untuk kartu besar dan kecil
-    return `
-      <div class="card--sale card--sale--${type}">
-        <div class="card--sale__img">
-          <img src="${sanitize(item.MediaURL)}" alt="${sanitize(item['Nama Menu'])}" loading="lazy">
-        </div>
-        <div class="card--sale__body">
-          <h3 class="card--sale__title">${sanitize(item['Nama Menu'])}</h3>
-          <p class="card--sale__price">
-            ${formatCurrency(price)}
-            <span class="card--sale__original-price">${formatCurrency(originalPrice)}</span>
-          </p>
-        </div>
-        ${discount > 0 ? `<div class="card--sale__badge">-${discount}%</div>` : ''}
-      </div>
-    `;
-  };
-
-  const createMenuCard = (item) => { /* ... (fungsi ini tidak berubah) ... */ };
-  const buildProxyUrl = (shareLink) => { /* ... (fungsi ini tidak berubah) ... */ };
-  const parseCSV = (csvText) => { /* ... (fungsi ini tidak berubah) ... */ };
-  const formatCurrency = (number) => { /* ... (fungsi ini tidak berubah) ... */ };
-  const sanitize = (str) => { /* ... (fungsi ini tidak berubah) ... */ };
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sambalix - Pesan Makanan</title>
   
-  // (Salin-tempel fungsi-fungsi yang tidak berubah dari kode sebelumnya di sini)
-  const createMenuCard = (item) => {const price=parseFloat(item.Harga)||0;return`
-      <div class="card--menu"><div class="card--menu__img"><img src="${sanitize(item.MediaURL)}" alt="${sanitize(item["Nama Menu"])}" loading="lazy"></div><div class="card--menu__body"><h3 class="card--menu__title">${sanitize(item["Nama Menu"])}</h3><p class="card--menu__category">${sanitize(item.Kategori)}</p><p class="card--menu__price">${formatCurrency(price)}</p></div></div>`};
-  const buildProxyUrl = (shareLink) => {const id=(shareLink.match(/\/d\/([a-zA-Z0-9-_]+)/)||[])[1];const gid=(shareLink.match(/gid=(\d+)/)||[, '0'])[1];return`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`};
-  const parseCSV = (csvText) => {const lines=csvText.trim().split('\n');const headers=lines[0].split(',').map(header=>header.trim().replace(/"/g,''));const rows=[];for(let i=1;i<lines.length;i++){const values=lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)||[];if(values.length===headers.length){const row={};for(let j=0;j<headers.length;j++){row[headers[j]]=values[j].trim().replace(/"/g,'')}rows.push(row)}}return rows};
-  const formatCurrency = (number) => {return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',minimumFractionDigits:0}).format(number)};
-  const sanitize = (str) => {const temp=document.createElement('div');temp.textContent=str;return temp.innerHTML};
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
 
-  fetchData();
-});
+  <main class="main-card">
+    
+    <div class="card-header">
+      <a class="brand" href="#">SAMBALI<span>X</span></a>
+      <button class="burger" aria-label="Buka Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <section class="hero-banner">
+      <img src="https://i.ibb.co/68gBSX2/banner-ayam.png" alt="Promo Spesial Sambalix" />
+    </section>
+
+    <section class="section" id="flash-sale-section" hidden>
+      <div class="section__header">
+        <h2 class="section__title">Flash Sale</h2>
+        <a href="#" class="section__link">Lihat Semua ›</a>
+      </div>
+      <div class="flash-sale-grid" id="flash-sale-container">
+        </div>
+    </section>
+    
+    <section class="section" id="main-menu-container">
+      </section>
+
+  </main>
+
+</body>
+</html>
