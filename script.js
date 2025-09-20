@@ -30,18 +30,17 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => {
             console.error('Detail Error:', error);
             if (loadingText) {
-                // Pesan error yang lebih membantu
                 loadingText.innerHTML = `
                     <strong>Gagal Memuat Menu.</strong><br>
                     Penyebab umum: Koneksi internet lambat atau browser menyimpan data lama (cache).<br><br>
-                    Silakan coba <strong>bersihkan cache browser Anda</strong> (lihat instruksi sebelumnya) lalu muat ulang halaman.
+                    Silakan coba <strong>bersihkan cache browser Anda</strong> lalu muat ulang halaman.
                 `;
             }
         });
 
     function parseTSV(tsv) {
         const rows = tsv.split('\n').map(row => row.trim());
-        if (rows.length < 2) return []; // Cek jika sheet kosong
+        if (rows.length < 2) return [];
         const headers = rows[0].split('\t').map(header => header.trim());
         const data = [];
 
@@ -61,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function createFilterButtons(items) {
         const categories = ['Semua', ...new Set(items.map(item => item.Kategori).filter(Boolean))];
         
-        filterButtonsContainer.innerHTML = ''; // Kosongkan tombol lama
+        filterButtonsContainer.innerHTML = '';
         categories.forEach(category => {
             const button = document.createElement('button');
             button.className = 'filter-btn';
