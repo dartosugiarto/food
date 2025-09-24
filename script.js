@@ -1,157 +1,88 @@
+// Link Google Sheet Anda yang sudah diubah ke format CSV publik.
+const googleSheetURL = 'https://docs.google.com/spreadsheets/d/10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE/gviz/tq?tqx=out:csv&sheet=Sheet1';
+
+// Menunggu halaman web selesai dimuat sebelum menjalankan kode
 document.addEventListener('DOMContentLoaded', () => {
-  const GOOGLE_SHEET_SHARE_LINK = "https://docs.google.com/spreadsheets/d/10bjcfNHBP6jCnLE87pgk5rXgVS8Qwyu8hc-LXCkdqEE/edit?usp=drivesdk";
+    loadMenuData();
+});
 
-  const flashSaleSection = document.getElementById('flash-sale-section');
-  const flashSaleContainer = document.getElementById('flash-sale-container');
-  const mainMenuContainer = document.getElementById('main-menu-container');
-
-  const csvUrl = buildProxyUrl(GOOGLE_SHEET_SHARE_LINK);
-
-  // Util: sanitize
-  function sanitize(str) {
-    return String(str || '').replace(/[&<>"']/g, s => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[s]));
-  }
-
-  // Optimize ImageKit URL
-  function optimizeImage(url, w = 600) {
+async function loadMenuData() {
     try {
-      const u = new URL(url);
-      if (u.hostname.includes('imagekit.io')) {
-        const qp = u.searchParams;
-        const tr = qp.get('tr');
-        if (!tr) qp.set('tr', `w-${w}`);
-        else if (!/w-\\d+/.test(tr)) qp.set('tr', tr + `,w-${w}`);
-        u.search = qp.toString();
-        return u.toString();
-      }
-      return url;
-    } catch { return url; }
-  }
+        const response = await fetch(googleSheetURL);
+        const csvText = await response.text();
+        const data = parseCSV(csvText);
 
-  const loadItems = async () => {
-    try {
-      const cacheKey = 'sambalix_csv_v1';
-      const cacheTsKey = 'sambalix_csv_ts_v1';
-      const maxAgeMs = 10 * 60 * 1000;
-
-      const now = Date.now();
-      const cached = localStorage.getItem(cacheKey);
-      const cachedTs = parseInt(localStorage.getItem(cacheTsKey) || '0', 10);
-
-      if (cached && (now - cachedTs) < maxAgeMs) {
-        const items = parseCSV(cached);
-        renderItems(items);
-        fetchCSVAndRender(true);
-      } else {
-        await fetchCSVAndRender(false);
-      }
+        displayMenu(data);
     } catch (error) {
-      console.error(error);
-      mainMenuContainer.innerHTML = `<p style="text-align: center; color: var(--red);">Gagal memuat menu. Coba lagi nanti.</p>`;
+        console.error('Gagal mengambil data menu:', error);
     }
-  };
+}
 
-  async function fetchCSVAndRender(isBackground = false) {
-    const response = await fetch(csvUrl, { cache: 'no-cache' });
-    const text = await response.text();
-    try {
-      localStorage.setItem('sambalix_csv_v1', text);
-      localStorage.setItem('sambalix_csv_ts_v1', String(Date.now()));
-    } catch {}
-    const items = parseCSV(text);
-    if (!isBackground) renderItems(items);
-  }
+function parseCSV(text) {
+    // Menghapus kutipan ganda yang mungkin ditambahkan oleh Google Sheets
+    const cleanedText = text.slice(1, -1);
+    const lines = cleanedText.split('"\n"');
+    const headers = lines[0].split('","');
+    const rows = [];
 
-  const renderItems = (items) => {
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const obj = {};
+        const currentline = lines[i].split('","');
+
+        for (let j = 0; j < headers.length; j++) {
+            obj[headers[j].trim()] = currentline[j].trim();
+        }
+        rows.push(obj);
+    }
+    return rows;
+}
+
+function displayMenu(menuItems) {
+    const flashSaleContainer = document.getElementById('flash-sale-container');
+    const mainMenuContainer = document.getElementById('menu-utama');
+
+    // Kosongkan kontainer sebelum mengisi
     flashSaleContainer.innerHTML = '';
     mainMenuContainer.innerHTML = '';
 
-    const flashSaleItems = items.filter(i => i['Kategori'] === 'Flash Sale' && i['Harga Asli']);
-    const mainMenuItems = items.filter(i => i['Kategori'] !== 'Flash Sale');
+    menuItems.forEach(item => {
+        // Cek jika data baris tidak kosong
+        if (!item['Nama Menu']) return;
 
-    if (flashSaleItems.length > 0) {
-      flashSaleSection.hidden = false;
+        // Format harga ke Rupiah
+        const hargaJual = parseInt(item['Harga Jual']);
+        const hargaAsli = parseInt(item['Harga Asli']);
+        const formattedHargaJual = `Rp${hargaJual.toLocaleString('id-ID')}`;
+        const formattedHargaAsli = `Rp${hargaAsli.toLocaleString('id-ID')}`;
 
-      if (flashSaleItems.length >= 3) {
-        const grid = document.createElement('div');
-        grid.className = 'flash-grid';
+        if (item.Kategori === 'Flash Sale') {
+            const discount = Math.round(((hargaAsli - hargaJual) / hargaAsli) * 100);
+            
+            const cardHTML = `
+                <div class="product-card">
+                    <img src="${item['Image Link']}" alt="${item['Nama Menu']}">
+                    <div class="discount-badge">-${discount}%</div>
+                    <div class="info">
+                        <h3>${item['Nama Menu']}</h3>
+                        <p class="price">${formattedHargaJual} <span class="original-price">${formattedHargaAsli}</span></p>
+                    </div>
+                </div>
+            `;
+            flashSaleContainer.innerHTML += cardHTML;
 
-        const featured = document.createElement('div');
-        featured.className = 'featured';
-        featured.innerHTML = createSaleCard(flashSaleItems[0], 'grid');
-        featured.querySelector('img')?.setAttribute('fetchpriority', 'high');
-        featured.firstElementChild.classList.add('featured');
-        grid.appendChild(featured.firstElementChild);
-
-        for (let i = 1; i <= 2; i++) {
-          const wrap = document.createElement('div');
-          wrap.className = 'stacked';
-          wrap.innerHTML = createSaleCard(flashSaleItems[i], 'grid');
-          wrap.firstElementChild.classList.add('stacked');
-          grid.appendChild(wrap.firstElementChild);
+        } else { // Untuk kategori selain Flash Sale
+            const cardHTML = `
+                <div class="product-card">
+                    <img src="${item['Image Link']}" alt="${item['Nama Menu']}">
+                    <div class="info">
+                        <h3>${item['Nama Menu']}</h3>
+                        <p class="category">${item.Kategori}</p>
+                        <p class="price">${formattedHargaJual}</p>
+                    </div>
+                </div>
+            `;
+            mainMenuContainer.innerHTML += cardHTML;
         }
-
-        flashSaleContainer.appendChild(grid);
-      } else {
-        const scroller = document.createElement('div');
-        scroller.className = 'horizontal-scroll';
-        flashSaleItems.forEach(item => scroller.insertAdjacentHTML('beforeend', createSaleCard(item)));
-        flashSaleContainer.appendChild(scroller);
-      }
-    }
-
-    if (mainMenuItems.length > 0) {
-      mainMenuItems.forEach(item => {
-        mainMenuContainer.innerHTML += createMenuCard(item);
-      });
-    }
-  };
-
-  const createSaleCard = (item, variant = 'default') => {
-    const price = parseFloat(item.Harga) || 0;
-    const originalPrice = parseFloat(item['Harga Asli']) || 0;
-    const discount = originalPrice > 0 ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
-
-    if (variant === 'grid') {
-      return `
-        <div class="flash-item">
-          <img fetchpriority="low" class="thumb" src="${optimizeImage(sanitize(item.MediaURL), 720)}" decoding="async" alt="${sanitize(item['Nama Menu'])}" loading="lazy">
-          ${discount > 0 ? `<div class="card--sale__badge">-${discount}%</div>` : ''}
-          <div class="body">
-            <h3 class="title">${sanitize(item['Nama Menu'])}</h3>
-            <div class="price">
-              ${formatCurrency(price)}
-              ${originalPrice > 0 ? `<span class="original">${formatCurrency(originalPrice)}</span>` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="card--sale">
-        <div class="card--sale__img">
-          <img fetchpriority="low" src="${optimizeImage(sanitize(item.MediaURL), 480)}" decoding="async" alt="${sanitize(item['Nama Menu'])}" loading="lazy">
-        </div>
-        ${discount > 0 ? `<div class="card--sale__badge">-${discount}%</div>` : ''}
-        <div class="card--sale__body">
-          <h3 class="card--sale__title">${sanitize(item['Nama Menu'])}</h3>
-          <p class="card--sale__price">
-            ${formatCurrency(price)}
-            ${originalPrice > 0 ? `<span class="card--sale__original-price">${formatCurrency(originalPrice)}</span>` : ''}
-          </p>
-        </div>
-      </div>
-    `;
-  };
-
-  // Placeholder util functions (isi sesuai aslinya)
-  function buildProxyUrl(sheetUrl) { return sheetUrl; }
-  function parseCSV(text) { return []; }
-  function formatCurrency(num) { return "Rp" + num.toLocaleString("id-ID"); }
-  function createMenuCard(item) { return `<div>${sanitize(item['Nama Menu'])}</div>`; }
-
-  loadItems();
-});
+    });
+}
