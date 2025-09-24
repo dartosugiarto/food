@@ -1,48 +1,41 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sambalix - Pesan Makanan</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sambalix</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <main class="main-card">
-    
-    <div class="card-header">
-      <a class="brand" href="#">SAMBALI<span>X</span></a>
-      <button class="burger" aria-label="Buka Menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-      </button>
-    </div>
+    <header>
+        <div class="container">
+            <h1>SAMBALIX</h1>
+            <button class="menu-toggle">☰</button>
+        </div>
+    </header>
 
-    <section class="hero-banner">
-      <img src="https://i.ibb.co/68gBSX2/banner-ayam.png" alt="Promo Spesial Sambalix" />
-    </section>
+    <main class="container">
+        <section class="hero">
+            <img src="https://i.ibb.co/L6V2MhN/banner.png" alt="Promo Banner">
+        </section>
 
-    <section id="flash-sale-section" class="section" hidden>
-      <div class="section__header">
-        <h2>Flash Sale</h2>
-      </div>
-      <div id="flash-sale-container"></div>
-    </section>
+        <section class="flash-sale">
+            <div class="section-header">
+                <h2>Flash Sale</h2>
+                <a href="#">Lihat Semua ›</a>
+            </div>
+            <div id="flash-sale-container" class="product-grid">
+                </div>
+        </section>
 
-    <section class="section">
-      <div class="section__header">
-        <h2>Menu Utama</h2>
-      </div>
-      <div id="main-menu-container"></div>
-    </section>
+        <section id="menu-utama" class="menu-list">
+             </section>
+    </main>
 
-  </main>
-
+    <script src="script.js"></script>
 </body>
 </html>
